@@ -1,0 +1,32 @@
+version: '3.7'
+services:
+  mongo-customer:
+    image: mongo:latest
+    container_name: "mongo-customer"
+    restart: unless-stopped
+    environment:
+      - MONGO_DATA_DIR=/data/customer
+      - MONGO_INITDB_ROOT_USERNAME=customer
+      - MONGO_INITDB_ROOT_PASSWORD=pass
+    volumes:
+      - ./data/customer:/data/db
+    ports:
+        - "27019:27017"
+    networks:
+      - customer
+  customer-service:
+    build: ./
+    container_name: "customer-service"
+    image: team13/microservice:customer
+    restart: unless-stopped
+    environment:
+      - MONGO_HOST=mongo-customer
+    ports:
+      - "3002:3002"
+    depends_on:
+      - mongo-customer
+    networks:
+      - customer
+networks:
+  customer:
+    driver: bridge

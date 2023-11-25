@@ -1,0 +1,130 @@
+services:
+  service-registry:
+    build: ./service-registry
+    container_name: "service-registry"
+    image: aseteam13/microservice-dev:service-registry
+    restart: unless-stopped
+    ports:
+      - "8761:8761"
+    networks:
+      - microservices
+    environment:
+      eureka.instance.hostname: service-registry
+      eureka.client.serviceUrl.defaultZone: http://service-registry:8761/eureka/
+    healthcheck:
+      test: curl --fail http://localhost:8761 || exit 1
+      interval: 30s
+      retries: 5
+      start_period: 10s
+      timeout: 10s
+
+  mongo-authentication:
+    image: mongo:latest
+    container_name: "mongo-authentication"
+    restart: unless-stopped
+    environment:
+      #- MONGO_DATA_DIR=/data/authentication-service
+      - MONGO_INITDB_ROOT_USERNAME=aseAdmin
+      - MONGO_INITDB_ROOT_PASSWORD=authentication
+    volumes:
+      - mongodb_authentication_service:/data/db
+    ports:
+      - "27018:27017"
+    networks:
+      - authentication
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 30s
+      retries: 5
+      start_period: 10s
+      timeout: 10s
+
+  mongo-delivery:
+    image: mongo:latest
+    container_name: "mongo-delivery"
+    restart: unless-stopped
+    environment:
+      #- MONGO_DATA_DIR=/data/delivery-service
+      - MONGO_INITDB_ROOT_USERNAME=aseAdmin
+      - MONGO_INITDB_ROOT_PASSWORD=delivery
+    volumes:
+      - mongodb_delivery_service:/data/db
+    ports:
+      - "27019:27017"
+    networks:
+      - delivery
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 30s
+      retries: 5
+      start_period: 10s
+      timeout: 10s
+
+  authentication-service:
+    build: ./authentication-service
+    container_name: "authentication-service"
+    image: aseteam13/microservice-dev:authentication-service
+    restart: on-failure
+    ports:
+      - "8081:8081"
+    depends_on:
+      mongo-authentication:
+        condition: service_healthy
+      service-registry:
+        condition: service_healthy
+    networks:
+      - microservices
+      - authentication
+    environment:
+      eureka.client.serviceUrl.defaultZone: http://service-registry:8761/eureka/
+    links:
+      - service-registry
+
+  delivery-service:
+    build: ./delivery-service
+    container_name: "delivery-service"
+    image: aseteam13/microservice-dev:delivery-service
+    restart: on-failure
+    ports:
+      - "8082:8082"
+    depends_on:
+      mongo-delivery:
+        condition: service_healthy
+      service-registry:
+        condition: service_healthy
+    networks:
+      - microservices
+      - delivery
+    environment:
+      eureka.client.serviceUrl.defaultZone: http://service-registry:8761/eureka/
+    links:
+      - service-registry
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: "api-gateway"
+    image: aseteam13/microservice-dev:api-gateway
+    restart: on-failure
+    ports:
+      - "8080:8080"
+    depends_on:
+      service-registry:
+        condition: service_healthy
+    networks:
+      - microservices
+    environment:
+      eureka.client.serviceUrl.defaultZone: http://service-registry:8761/eureka/
+    links:
+      - service-registry
+
+networks:
+  microservices:
+    name: ase-delivery
+    driver: bridge
+  authentication:
+    driver: bridge
+  delivery:
+    driver: bridge
+volumes:
+  mongodb_authentication_service:
+  mongodb_delivery_service:

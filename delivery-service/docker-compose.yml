@@ -1,0 +1,31 @@
+version: '3.7'
+services:
+  mongo-delivery:
+    image: mongo:latest
+    container_name: "mongo-delivery"
+    restart: unless-stopped
+    environment:
+      - MONGO_DATA_DIR=/data/delivery-service
+      - MONGO_INITDB_ROOT_USERNAME=aseAdmin
+      - MONGO_INITDB_ROOT_PASSWORD=delivery
+    volumes:
+      - ./data/delivery-service:/data/db
+    ports:
+      - "27019:27017"
+    networks:
+      - delivery
+
+  delivery-service:
+    build: ./
+    container_name: "delivery-service"
+    image: team13/microservice:delivery-service
+    restart: unless-stopped
+    ports:
+      - "8082:8082"
+    depends_on:
+      - mongo-delivery
+    networks:
+      - delivery
+networks:
+  delivery:
+    driver: bridge

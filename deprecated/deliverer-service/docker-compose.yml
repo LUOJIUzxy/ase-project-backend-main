@@ -1,0 +1,30 @@
+version: '3.7'
+services:
+  mongo-deliverer:
+    image: mongo:latest
+    container_name: "mongo-deliverer"
+    restart: unless-stopped
+    environment:
+      - MONGO_DATA_DIR=/data/deliverer
+      - MONGO_INITDB_ROOT_USERNAME=deliverer
+      - MONGO_INITDB_ROOT_PASSWORD=pass
+    volumes:
+      - ./data/deliverer:/data/db
+    ports:
+        - "27020:27017"
+    networks:
+      - deliverer
+  deliverer-service:
+    build: ./
+    container_name: "deliverer-service"
+    image: team13/microservice:deliverer
+    restart: unless-stopped
+    ports:
+      - "3003:3003"
+    depends_on:
+      - mongo-deliverer
+    networks:
+      - deliverer
+networks:
+  deliverer:
+    driver: bridge

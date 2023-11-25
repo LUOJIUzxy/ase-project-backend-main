@@ -1,0 +1,9 @@
+version: '3.7'
+services:
+  service-registry:
+    build: ./
+    container_name: "service-registry"
+    image: team13/microservice:service-registry
+    restart: unless-stopped
+    ports:
+      - "8761:8761"

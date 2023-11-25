@@ -1,0 +1,30 @@
+version: '3.7'
+services:
+  mongo-box:
+    image: mongo:latest
+    container_name: "mongo-box"
+    restart: unless-stopped
+    environment:
+      - MONGO_DATA_DIR=/data/box
+      - MONGO_INITDB_ROOT_USERNAME=box
+      - MONGO_INITDB_ROOT_PASSWORD=pass
+    volumes:
+      - ./data/box:/data/db
+    ports:
+        - "27018:27017"
+    networks:
+      - box
+  box-service:
+    build: ./
+    container_name: "box-service"
+    image: team13/microservice:box
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    depends_on:
+      - mongo-box
+    networks:
+      - box
+networks:
+  box:
+    driver: bridge

@@ -1,0 +1,29 @@
+server:
+  port: 3004
+
+spring:
+  application:
+    name: dispatcher-service
+
+  # Configuration for the connection string to MongoDB database
+  data:
+    mongodb:
+      # Configure database location
+      host: mongo-dispatcher
+      #host: localhost
+      port: 27017
+      database: dispatchers
+      #uri: mongodb://mongo-dispatcher:27021/dispatchers
+
+      # Configure credential
+      username: dispatcher
+      password: pass
+      authentication-database: admin
+
+      # Configure Database Operation,
+      # allow creating index automatically from the code
+      auto-index-creation: true
+
+      #enable the usage of Spring Data Mongo Repository
+      repositories:
+        enabled: true

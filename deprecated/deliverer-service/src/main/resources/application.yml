@@ -1,0 +1,28 @@
+server:
+  port: 3003
+
+spring:
+  application:
+    name: deliverer-service
+
+  # Configuration for the connection string to MongoDB database
+  data:
+    mongodb:
+      # Configure database location
+      host: mongo-deliverer
+      #host: localhost
+      port: 27017
+      database: deliverers
+
+      # Configure credential
+      username: deliverer
+      password: pass
+      authentication-database: admin
+
+      # Configure Database Operation,
+      # allow creating index automatically from the code
+      auto-index-creation: true
+
+      #enable the usage of Spring Data Mongo Repository
+      repositories:
+        enabled: true

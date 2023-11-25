@@ -1,0 +1,49 @@
+clientAddr: https://localhost:3000
+
+server:
+  port: 8080
+  ssl:
+    enabled: true
+    key-store-password: password
+    key-password: password
+    key-store: classpath:keystore.jks
+    key-store-type: JKS
+
+spring:
+#  main:
+#    web-application-type: reactive
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      httpclient:
+        ssl:
+          use-insecure-trust-manager: true
+      routes:
+        - id: authentication-service
+          uri: lb://AUTHENTICATION-SERVICE
+          predicates:
+            -  Path=/auth/**, /credential/**
+        - id: delivery-service
+          uri: lb://DELIVERY-SERVICE
+          predicates:
+            -  Path=/box/**, /order/**, /user/**, /delivery/csrf
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_UNIQUE
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "https://localhost:3000/"
+            allowedMethods: "*"
+            allowed-headers: "*"
+            allow-credentials: true
+
+
+  # Configuration for the connection string to MongoDB database
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+    fetch-registry: true
+    register-with-eureka: true

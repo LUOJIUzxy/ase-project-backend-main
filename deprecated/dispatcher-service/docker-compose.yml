@@ -1,0 +1,30 @@
+version: '3.7'
+services:
+  mongo-dispatcher:
+    image: mongo:latest
+    container_name: mongo-dispathcer
+    restart: unless-stopped
+    environment:
+      - MONGO_DATA_DIR=/data/dispatcher
+      - MONGO_INITDB_ROOT_USERNAME=dispatcher
+      - MONGO_INITDB_ROOT_PASSWORD=pass
+    volumes:
+      - ./data/dispatcher:/data/db
+    ports:
+        - "27021:27017"
+    networks:
+      - dispatcher
+  dispatcher-service:
+    build: ./
+    container_name: dispatcher-service
+    image: team13/microservice:dispatcher
+    restart: unless-stopped
+    ports:
+      - "3004:3004"
+    depends_on:
+      - mongo-dispatcher
+    networks:
+      - dispatcher
+networks:
+  dispatcher:
+    driver: bridge

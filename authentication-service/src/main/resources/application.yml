@@ -1,0 +1,57 @@
+server:
+  port: 8081
+
+clientAddr: https://localhost:3000/
+
+spring:
+#  main:
+#    web-application-type: reactive
+  application:
+    name: authentication-service
+
+  data:
+    mongodb:
+      # Configure database location
+      host: mongo-authentication
+      port: 27017
+      database: authentication
+
+      # Configure credential
+      username: aseAdmin
+      password: authentication
+      authentication-database: admin
+
+      # Configure Database Operation,
+      # allow creating index automatically from the code
+      auto-index-creation: true
+
+      #enable the usage of Spring Data Mongo Repository
+      repositories:
+        enabled: true
+
+#  data:
+#    mongodb:
+#      # Configure database location
+#      host: localhost
+#      port: 27017
+#      database: aseProject
+#
+#      # Configure credential
+#      username: aseAdmin
+#      password: password
+#      authentication-database: admin
+#
+#      # Configure Database Operation,
+#      # allow creating index automatically from the code
+#      auto-index-creation: true
+#
+#      #enable the usage of Spring Data Mongo Repository
+#      repositories:
+#        enabled: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+    fetch-registry: true
+    register-with-eureka: true

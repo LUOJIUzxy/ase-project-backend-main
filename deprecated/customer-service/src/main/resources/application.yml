@@ -1,0 +1,28 @@
+server:
+  port: 3002
+
+spring:
+  application:
+    name: customer-service
+
+  # Configuration for the connection string to MongoDB database
+  data:
+    mongodb:
+      # Configure database location
+      host: mongo-customer
+      #host: localhost
+      port: 27017
+      database: customers
+
+      # Configure credential
+      username: customer
+      password: pass
+      authentication-database: admin
+
+      # Configure Database Operation,
+      # allow creating index automatically from the code
+      auto-index-creation: true
+
+      #enable the usage of Spring Data Mongo Repository
+      repositories:
+        enabled: true

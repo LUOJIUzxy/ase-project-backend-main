@@ -1,0 +1,31 @@
+version: '3.7'
+services:
+  mongo-authentication:
+    image: mongo:latest
+    container_name: "mongo-authentication"
+    restart: unless-stopped
+    environment:
+      - MONGO_DATA_DIR=/data/authentication-service
+      - MONGO_INITDB_ROOT_USERNAME=aseAdmin
+      - MONGO_INITDB_ROOT_PASSWORD=authentication
+    volumes:
+      - ./data/authentication-service:/data/db
+    ports:
+      - "27018:27017"
+    networks:
+      - authentication
+
+  authentication-service:
+    build: ./
+    container_name: "authentication-service"
+    image: team13/microservice:authentication-service
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mongo-authentication
+    networks:
+      - authentication
+networks:
+  authentication:
+    driver: bridge

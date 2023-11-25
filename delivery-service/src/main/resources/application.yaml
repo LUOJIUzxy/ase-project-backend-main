@@ -1,0 +1,71 @@
+server:
+  port: 8082
+  error:
+    include-message: always
+
+clientAddr: https://localhost:3000/
+
+spring:
+  application:
+    name: delivery-service
+  mail:
+    protocol: smtp
+    host: smtp.gmail.com
+    port: 587
+    username: wlslalalalala@gmail.com
+    password: lxhedufarnqmdtdz
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+
+  data:
+    mongodb:
+      # Configure database location
+      host: mongo-delivery
+      port: 27017
+      database: delivery
+
+      # Configure credential
+      username: aseAdmin
+      password: delivery
+      authentication-database: admin
+
+      # Configure Database Operation,
+      # allow creating index automatically from the code
+      auto-index-creation: true
+
+      #enable the usage of Spring Data Mongo Repository
+      repositories:
+        enabled: true
+
+  # Configuration for the connection string to MongoDB database
+#  data:
+#    mongodb:
+#      # Configure database location
+#      host: localhost
+#      port: 27017
+#      database: aseDelivery
+#
+#      # Configure credential
+#      username: aseAdmin
+#      password: password
+#      authentication-database: admin
+#
+#      # Configure Database Operation,
+#      # allow creating index automatically from the code
+#      auto-index-creation: true
+#
+#      #enable the usage of Spring Data Mongo Repository
+#      repositories:
+#        enabled: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+    fetch-registry: true
+    register-with-eureka: true
